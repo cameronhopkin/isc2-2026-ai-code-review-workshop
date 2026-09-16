@@ -1,0 +1,21 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Target app runtime artifacts
+target-app/*.db
+target-app/instance/
+target-app/downloads/
+target-app/exports/
+
+# Review output
+findings.json
+*.findings.json
+
+# Editors and OS
+.DS_Store
+.vscode/
+.idea/
