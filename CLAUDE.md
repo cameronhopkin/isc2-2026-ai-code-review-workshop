@@ -19,7 +19,7 @@ Project: ISC2 Security Congress 2026 workshop, "From Zero to Security Bot: Build
 
 ## Standing rules
 
-- Python 3.11 minimum. Always a venv (`python -m venv .venv`). Never system pip. Every setup path and every doc shows venv creation and activation for both bash and PowerShell.
+- Python 3.14 minimum. Always a venv (`python -m venv .venv`). Never system pip. Every setup path and every doc shows venv creation and activation for both bash and PowerShell.
 - Cross-platform is a hard requirement: pathlib for paths, no `shell=True`, no bash-isms inside Python, line endings handled. Anything that works on one OS only is a bug.
 - Minimal pinned dependencies: requests, bandit, flask, pytest. Ask before adding anything else.
 - Scanner is Bandit (pip-installable, pure Python, runs on Windows). Semgrep is an optional add-on later; verify its native Windows status before it appears in any prerequisite.
