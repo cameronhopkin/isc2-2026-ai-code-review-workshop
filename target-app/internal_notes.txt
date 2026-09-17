@@ -1,0 +1,3 @@
+INTERNAL ONLY
+This file sits outside the upload directory.
+If a download returns it, path traversal worked.

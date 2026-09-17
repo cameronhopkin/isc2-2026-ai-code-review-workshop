@@ -75,7 +75,7 @@ Two findings that shape the build:
 
 ## Gotchas
 
-- **detect-secrets silently returns zero results when given an absolute path.** The identical file scanned with a repo-relative path from the repo root returns the finding. Every code path and every doc must use relative paths.
+- **detect-secrets has two silent-failure modes, both returning an empty result rather than an error.** First, a directory scan only covers git-tracked files, so a directory of new uncommitted files reports nothing; `--all-files` fixes it but does not honor `.gitignore`, so noise paths need explicit exclusion. Second, it only reports files whose path resolves under the current working directory, so an absolute path to a file outside cwd returns nothing. Run it from the repo root with repo-relative paths, and have the caller verify a non-zero file count.
 - **Bandit does not emit SARIF out of the box.** Formats are csv, custom, html, json, screen, txt, xml, yaml. SARIF requires the `bandit-sarif-formatter` package, which is pip-installable and pure Python.
 
 ## Workshop content
