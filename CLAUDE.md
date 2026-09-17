@@ -42,7 +42,8 @@ Open item: the Dell's 3050 Ti has 4 GB of VRAM and will not hold a 7B fully. As 
 
 ## Standing rules
 
-- Python 3.14 minimum. Always a venv (`python -m venv .venv`). Never system pip. Every setup path and every doc shows venv creation and activation for both bash and PowerShell.
+- Python 3.11 minimum, because that is what ISC2 published as the prerequisite. Attendee-facing docs say 3.11 or newer and nothing stricter. CI tests the 3.11 floor on all three operating systems and also tests 3.14, so forward breakage is caught. Dev machines run 3.14. Code must run on both, so no syntax or stdlib newer than 3.11.
+- Always a venv (`python -m venv .venv`). Never system pip. Every setup path and every doc shows venv creation and activation for both bash and PowerShell.
 - Cross-platform is a hard requirement: pathlib for paths, no `shell=True`, no bash-isms inside Python, line endings handled. Anything that works on one OS only is a bug.
 - Minimal pinned dependencies: requests, bandit, bandit-sarif-formatter, detect-secrets, flask, pytest. Ask before adding anything else.
 - Scanners are Bandit for SAST and detect-secrets for secret detection. Both are pip-installable, pure Python, and run on Windows. They are complementary: Bandit caught both planted secrets via B105, detect-secrets caught one of them plus classes Bandit has no rule for. Semgrep is an optional add-on later; verify its native Windows status before it appears in any prerequisite.

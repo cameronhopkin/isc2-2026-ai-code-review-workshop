@@ -1,33 +1,157 @@
-# AI-Augmented Code Review Pipelines
+# From Zero to Security Bot
 
-Workshop materials for the ISC2 Security Congress 2026 hands-on workshop on building production AI-augmented code review pipelines.
+Building and Hardening an AI-Powered Code Review Pipeline.
+
+Workshop materials for the ISC2 Security Congress 2026 two-day hands-on workshop. You build a code review bot that runs entirely on your own laptop, wire it into CI, attack it, and harden it.
 
 **Status:** Workshop preparation in progress. Final lab guide published after October 2026.
 
 ## What this is
 
-A reference implementation and lab guide for security engineers building LLM-assisted code review into their CI pipelines. Built around self-hosted, on-premise LLM patterns (GPT-OSS 120B class models) rather than third-party API dependencies.
+A reference implementation and lab guide for security engineers who want LLM-assisted code review in their pipelines without sending code to a vendor.
 
-## What attendees will leave with
+The bot consumes the scanner output you already have. Bandit and detect-secrets findings go in, and triaged, explained, prioritized review comments come out, each one citing a real file and line. SARIF is the input contract, so anything that emits SARIF (Semgrep, CodeQL, gitleaks) works the same way.
 
-- A working reference pipeline they can fork into their own GitLab or GitHub setup
-- Prompt patterns for code review that account for context window limits and tool-use constraints
-- Evaluation harness for measuring review quality over time
-- A defense pattern catalog for the prompt injection surface introduced by reading attacker-controlled code
+Everything runs on an open-weight model served locally by Ollama. No cloud, no API keys, no paid tiers, no Docker.
 
-## Structure (planned)
+## What you leave with
 
-- `reference-pipeline/` — Working GitLab CI / GitHub Actions example
-- `prompts/` — Prompt templates with documentation
-- `eval-harness/` — Quality measurement tooling
-- `defense-patterns/` — Prompt injection mitigations specific to code review context
-- `slides/` — Workshop slides (post-delivery)
-- `lab-guide/` — Step-by-step workshop instructions (post-delivery)
+- A working review pipeline you can fork into your own GitHub Actions or GitLab CI setup, on the free tier, with templates provided.
+- Three anti-hallucination patterns enforced in code, not just in prompts: every finding cites a file and line, the model checks its output against the context it was given, and reporting nothing is a valid answer.
+- Hands-on experience attacking an LLM review bot: prompt injection through comments and commit messages, false-negative manipulation, exfiltration, resource exhaustion.
+- A hardening checklist and a total cost of ownership model for self-hosted versus commercial.
 
-## Talk details
+## The model
 
-ISC2 Security Congress 2026, October. Workshop session details to be added.
+The attendee path is an open-weight coder model running on your laptop through Ollama. The default is `qwen2.5-coder:7b`.
+
+A smaller tier, `qwen2.5-coder:3b`, runs the main workshop path just as accurately and about twice as fast, because triaging a scanner finding is a much smaller job than discovering a bug cold. The 7B earns its place in the capstone, where the bot has to find a broken access control bug that no scanner flags. Measurements are in `docs/MODEL_EVAL.md`, and comparing the two is itself a Day 1 lab.
+
+The 120B-class self-hosted tier is not something you run on a laptop. It appears in Module 7 as the scale-up reference architecture.
+
+## Two-day outline
+
+Both days run 8:00 AM to 5:00 PM with an hour for lunch and two breaks.
+
+### Day 1
+
+| Time | Module |
+|---|---|
+| 8:00 | Setup check and introductions |
+| 8:30 | **1. The Landscape.** Where LLM code review actually helps, where it does not, and what model size buys you. |
+| 9:45 | Break |
+| 10:00 | **2. Model Deployment.** Lab: get a model running on your own machine, then compare a small and a large model on the same finding. |
+| 11:30 | Lunch |
+| 12:30 | **3. Building the Security Bot.** Lab: read scanner results, triage them through the model, produce a review comment. |
+| 14:15 | Break |
+| 14:30 | **3.5 Anti-Hallucination Patterns.** Citation-required, chain-of-verification, refuse-over-guess, enforced in code. |
+| 15:15 | **4. CI/CD Integration.** Lab: the bot runs in a live pipeline against a commit with planted vulnerabilities, non-blocking. |
+| 17:00 | End |
+
+### Day 2
+
+| Time | Module |
+|---|---|
+| 8:00 | Recap |
+| 8:15 | **5. Attacking Your Own Bot.** Prompt injection via comments and commit messages, false-negative manipulation, exfiltration, resource exhaustion. Lab: attack each other's bots. |
+| 10:00 | Break |
+| 10:15 | **6. Defenses and Enterprise Hardening.** Input isolation, output validation, secret management, network segmentation, audit logging, rate limiting. |
+| 11:45 | Lunch |
+| 12:45 | **7. Production Architecture.** Scaling, the 120B-class tier, model update strategy, monitoring, and the TCO model. |
+| 14:15 | Break |
+| 14:30 | **8. Capstone.** A hardened bot against a realistic vulnerable codebase, scored on bugs no scanner catches. |
+| 16:30 | Group comparison and wrap |
+
+## Prerequisites
+
+Please complete all of this **before you travel**. The model download is several gigabytes and conference wifi will not be kind to it.
+
+### Hardware
+
+- **16 GB of RAM minimum.** 32 GB recommended. An 8 GB machine will not work, so please do not plan to bring one.
+- **About 10 GB of free disk space** for the model, Python, and the workshop repository.
+- A discrete GPU or Apple Silicon is recommended but not required. On a CPU-only laptop the bot still works, it just thinks out loud slowly: expect a minute or two per review instead of a few seconds.
+
+### Operating system
+
+Any one of these:
+
+- Windows 11
+- macOS 13 Ventura or newer, Apple Silicon or Intel
+- Linux, Ubuntu 22.04 or newer or equivalent
+
+### Software
+
+You need the ability to install software on the laptop you bring. None of the tools below require administrator rights, but some corporate device management blocks installers outright. Please check this before the event, because there is no way to fix it in the room.
+
+1. **Python 3.11 or newer.** Check with `python --version` (Windows) or `python3 --version` (macOS and Linux). If it is missing or older, install from [python.org/downloads](https://www.python.org/downloads/). On Windows, tick "Add python.exe to PATH" in the installer.
+2. **Git.** Check with `git --version`. If it is missing, install from [git-scm.com/downloads](https://git-scm.com/downloads).
+3. **A GitHub or GitLab account.** The free tier is all you need. You will push a small repository and open a pull or merge request against it.
+4. **Ollama.** Download from [ollama.com/download](https://ollama.com/download) and install it. Check with `ollama --version`.
+
+### Pull the model before you travel
+
+With Ollama installed and running:
+
+```bash
+ollama pull qwen2.5-coder:7b
+```
+
+```powershell
+ollama pull qwen2.5-coder:7b
+```
+
+That is about 4.7 GB. If your laptop is CPU-only or tight on memory, also pull the smaller model, which is about 1.9 GB and runs the Day 1 labs faster:
+
+```bash
+ollama pull qwen2.5-coder:3b
+```
+
+```powershell
+ollama pull qwen2.5-coder:3b
+```
+
+Confirm the download worked:
+
+```bash
+ollama list
+```
+
+```powershell
+ollama list
+```
+
+You should see the model you pulled. If the list is empty, the pull did not finish, so run it again on a stable connection.
+
+### If your laptop cannot run the model
+
+An instructor-hosted model will be available on the workshop network as a fallback. You point the tooling at it by setting one environment variable, and everything else works the same:
+
+```bash
+export OLLAMA_HOST=http://<address-given-in-room>:11434
+```
+
+```powershell
+$env:OLLAMA_HOST = "http://<address-given-in-room>:11434"
+```
+
+This is a safety net, not the plan. Please still try the prerequisites above, because the room network will be shared by everyone using the fallback.
+
+## Structure
+
+- `reference-pipeline/` Working review bot: setup scripts, CLI, smoke test, and tests
+- `target-app/` Intentionally vulnerable Flask application used throughout the labs
+- `prompts/` Prompt templates with documentation
+- `eval-harness/` Detection-rate measurement and capstone scoring
+- `defense-patterns/` Prompt injection mitigations specific to the code review context
+- `docs/` Build brief, model evaluation, and the proposal of record
+- `slides/` Workshop slides (published after delivery)
+- `lab-guide/` Step-by-step workshop instructions (published after delivery)
+
+## Topics
+
+AI security, code review, DevSecOps, GitLab CI, SAST, LLM security, ISC2.
 
 ## License
 
-Apache 2.0
+Apache 2.0. See [LICENSE](LICENSE).

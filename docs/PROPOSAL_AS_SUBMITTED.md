@@ -57,7 +57,7 @@ The September 2026 decision to default to `qwen2.5-coder:7b` sits inside the 1B 
 
 Open gaps between this document and the current repo. Each needs a decision.
 
-1. **Python version.** The published prerequisite is 3.11 or newer. The repo currently sets a 3.14 floor. An attendee who arrives with 3.11, as published, would be unable to run the labs. Recommended fix: attendee floor returns to 3.11 as published, while the dev machines and the CI matrix pin 3.14.
+1. ~~**Python version.**~~ **Resolved September 2026.** The published prerequisite is 3.11 or newer, and the repo now matches it. Attendee docs say 3.11 or newer. CI tests the 3.11 floor on all three operating systems and also tests 3.14. Dev machines run 3.14. No coordination with Bradley needed.
 2. **Docker Desktop.** Published as a prerequisite, since dropped. Dropping it makes setup easier and is not a broken promise, but confirm what ISC2 actually has on the listing and tell Bradley if it needs the edit.
 3. **Module 3.5.** The repo adds an Anti-Hallucination Patterns session on Day 1. The submitted plan has eight modules with no 3.5, and covers output validation for hallucinated findings inside Module 6, Enterprise Hardening, on Day 2. Either fold 3.5 into the published numbering or accept it as an unnumbered Day 1 segment. Do not let the published module count drift.
 4. **Posting to the PR or MR.** The submitted Module 3 lab ends with a comment posted to the PR or MR. Phase 1 ends with JSON on stdout. This is a promised behavior, so it is Phase 2 work rather than an optional extra.
