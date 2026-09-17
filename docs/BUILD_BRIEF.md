@@ -28,11 +28,17 @@ README is the February 2026 version and is stale (it describes GPT-OSS 120B clas
 Files:
 
 - `setup.sh` and `setup.ps1`: create `.venv`, install pinned requirements, check that Ollama answers at `OLLAMA_HOST`, check that the configured model is present (offer to pull it), then run the smoke test. Idempotent. Every failure message names the fix.
-- `requirements.txt`: pinned versions.
-- `config.toml`: model, host, request timeout, max findings.
-- `review.py`: CLI. Inputs: `--file <path>`, `--diff <path>` (unified diff), or `--staged` (uses `git diff --cached`). Optional `--scanner` runs Bandit first and passes its JSON to the model as evidence. Output: JSON on stdout matching the schema below. Exit code 0 always in this phase; blocking behavior is a later module.
+- `requirements.txt`: pinned versions. requests, bandit, bandit-sarif-formatter, detect-secrets, flask, pytest.
+- `config.toml`: model, host, request timeout, max findings. Default model `qwen2.5-coder:7b`, see `docs/MODEL_EVAL.md`.
+- `review.py`: CLI. Inputs: `--file <path>`, `--diff <path>` (unified diff), or `--staged` (uses `git diff --cached`).
+
+  Scanner output is the primary input, not an option. By default `review.py` runs Bandit and detect-secrets over the target, normalizes both into SARIF, and asks the model to triage each finding: confirm it against the cited line, explain the risk for a developer, prioritize it, and give remediation. `--no-scanner` drops to freeform review of raw code, which is the secondary path and is where small models fail.
+
+  SARIF is the input contract, so `--sarif <path>` accepts findings from any tool that emits it (Semgrep, CodeQL, gitleaks) and skips running the local scanners. Bandit needs `bandit-sarif-formatter` for this. Call detect-secrets with repo-relative paths from the repo root, because an absolute path makes it silently return nothing.
+
+  Output: JSON on stdout matching the schema below. Exit code 0 always in this phase; blocking behavior is a later module.
 - `../prompts/review_system.md`: the system prompt, implementing citation-required and refuse-over-guess. Lives in the top-level `prompts/` folder and is loaded by `review.py` at runtime.
-- `smoke.py`: runs `review.py` against `target-app/` and asserts valid JSON, schema conformance, and at least one finding on the obvious bugs. Supports `--dry-run`, which renders the full prompt without calling Ollama (for CI runners that have no model).
+- `smoke.py`: runs `review.py` against `target-app/` and asserts valid JSON, schema conformance, and findings on the SQL injection, the hardcoded secret, and the command injection. Supports `--dry-run`, which renders the full prompt without calling Ollama (for CI runners that have no model).
 - `tests/`: pytest for schema validation and the diff parser. No model calls in tests.
 
 Findings schema (keep it this simple):
@@ -82,17 +88,27 @@ A finding without a file and line range is invalid and gets dropped with a logge
 
 - Fresh clone on the Mac: `bash reference-pipeline/setup.sh` ends with a passing smoke test.
 - Fresh clone on the Dell (Windows 11, PowerShell, non-admin): `.\reference-pipeline\setup.ps1` ends with a passing smoke test.
-- `python review.py --file ../target-app/app.py --scanner` returns valid JSON and finds at least the SQL injection and the hardcoded secret.
+- `python review.py --file ../target-app/app.py` returns valid JSON and finds the SQL injection, the hardcoded secret, and the command injection. Those are the three of the five planted bugs that the Phase 1 pipeline can reach. Path traversal and BOLA are out of reach for scanners and for the model without repo-read, which is the Module 3 argument, so do not assert on them.
 - `python review.py --diff <an innocuous diff>` returns empty findings with a populated `no_findings_reason`.
 - README describes what actually exists. CI is green on all three OS runners.
 
 ## Phase 2 (do not start)
 
+Promised in the submission, so these are required work rather than optional extras. See `docs/PROPOSAL_AS_SUBMITTED.md`.
+
+- Posting the review back as a comment on the PR or MR. The Module 3 lab as submitted ends there, not at JSON on stdout.
+- GitLab CI template alongside the GitHub Actions one. Both were promised, on free tier.
+- `practice-repos/`: small vulnerable repos an attendee pushes to their own GitHub or GitLab account, so findings land in the PR or MR interface instead of only in a terminal. One per CI system, each with a planted-bug commit ready to open as a pull request.
+- A hardening checklist deliverable.
+- A TCO model for self-hosted versus commercial, the third published takeaway. Module 7.
+
+Not promised, but planned:
+
 - Repo-read tool and code slicing (Module 3 grounding).
 - Chain-of-verification pass.
-- `eval-harness/`: detection-rate measurement and capstone scoring (diff-only vs diff plus repo-read).
+- `eval-harness/`: detection-rate measurement and capstone scoring (diff-only vs diff plus repo-read). Supersedes `docs/MODEL_EVAL.md`.
 - `defense-patterns/`: Day 2 attacks and mitigations.
-- GitLab CI example, MCP layer, instructor-hosted fallback docs, workshop network notes.
+- MCP layer, instructor-hosted fallback docs, workshop network notes.
 - `slides/` and `lab-guide/` prose.
 
 ## Kickoff prompt
