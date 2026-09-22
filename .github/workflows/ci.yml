@@ -51,12 +51,14 @@ jobs:
       - name: Test the reference pipeline
         shell: bash
         working-directory: reference-pipeline
-        run: "$VENV_PY" -m pytest tests/ -v
+        run: |
+          "$VENV_PY" -m pytest tests/ -v
 
       - name: Test the target app
         shell: bash
         working-directory: target-app
-        run: "$VENV_PY" -m pytest tests/ -v
+        run: |
+          "$VENV_PY" -m pytest tests/ -v
 
       # No Ollama on CI runners, so the smoke test runs in dry-run mode.
       # It still exercises both scanners, the SARIF parsing, the merge,
@@ -64,4 +66,5 @@ jobs:
       - name: Smoke test (dry run)
         shell: bash
         working-directory: reference-pipeline
-        run: "$VENV_PY" smoke.py --dry-run
+        run: |
+          "$VENV_PY" smoke.py --dry-run
