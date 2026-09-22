@@ -50,7 +50,7 @@ Bandit catches both as **B105**. detect-secrets catches the secret key as a Secr
 
 | | |
 |---|---|
-| Where | `storage.py`, `generate_report`, lines 37 and 40 |
+| Where | `storage.py`, `generate_report`, lines 37 to 40 |
 | Exploit test | `test_bug_4_command_injection_in_export` |
 
 The `format` query parameter is concatenated into a shell string and run with `shell=True`. A shell separator chains an attacker's command onto the end.

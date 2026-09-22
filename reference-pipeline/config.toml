@@ -1,0 +1,31 @@
+# Review bot configuration.
+#
+# Environment variables win over anything set here:
+#   OLLAMA_HOST   overrides host
+#   REVIEW_MODEL  overrides model
+
+[model]
+# Default is the 7B. It is the only model measured that finds bugs cold,
+# which the capstone needs. See docs/MODEL_EVAL.md.
+#
+# On a CPU-only or memory-constrained laptop, switch to
+# "qwen2.5-coder:3b". It triages scanner findings just as accurately and
+# about twice as fast. It cannot discover bugs cold.
+name = "qwen2.5-coder:7b"
+host = "http://127.0.0.1:11434"
+timeout_seconds = 300
+temperature = 0
+context_tokens = 8192
+
+[review]
+# Cap on findings emitted. Protects CI output and bounds runtime.
+max_findings = 25
+
+# Scanner rules that are advisory rather than defects, dropped before the
+# model ever sees them. Triaging these wastes a model call each.
+#   B404  importing subprocess, which is not a bug on its own
+#   B101  assert used, which is how pytest is written
+ignored_rules = ["B404", "B101"]
+
+# Paths never handed to the scanners.
+excluded_paths = [".venv", ".git", ".pytest_cache", "__pycache__", "node_modules"]
