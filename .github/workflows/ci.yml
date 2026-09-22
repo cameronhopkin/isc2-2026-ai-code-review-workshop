@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        # 3.11 is the published prerequisite and the floor attendees will
+        # actually arrive with. 3.14 is what the dev machines run. Both
+        # are tested so breakage at either end is caught.
+        python-version: ["3.11", "3.14"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Every step runs under bash, which GitHub provides on Windows too,
+      # so there is one code path instead of three.
+      - name: Create the virtual environment
+        shell: bash
+        run: |
+          python -m venv .venv
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            echo "VENV_PY=$PWD/.venv/Scripts/python.exe" >> "$GITHUB_ENV"
+          else
+            echo "VENV_PY=$PWD/.venv/bin/python" >> "$GITHUB_ENV"
+          fi
+
+      - name: Install pinned dependencies
+        shell: bash
+        run: |
+          "$VENV_PY" -m pip install --quiet --upgrade pip
+          "$VENV_PY" -m pip install --quiet -r reference-pipeline/requirements.txt
+          "$VENV_PY" -m pip list --format=freeze
+
+      - name: Test the reference pipeline
+        shell: bash
+        working-directory: reference-pipeline
+        run: "$VENV_PY" -m pytest tests/ -v
+
+      - name: Test the target app
+        shell: bash
+        working-directory: target-app
+        run: "$VENV_PY" -m pytest tests/ -v
+
+      # No Ollama on CI runners, so the smoke test runs in dry-run mode.
+      # It still exercises both scanners, the SARIF parsing, the merge,
+      # and prompt rendering. Only the model call is skipped.
+      - name: Smoke test (dry run)
+        shell: bash
+        working-directory: reference-pipeline
+        run: "$VENV_PY" smoke.py --dry-run
