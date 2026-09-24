@@ -20,7 +20,7 @@ README is the February 2026 version and is stale (it describes GPT-OSS 120B clas
 
 - Fix the model story: small model local via Ollama for attendees, the 120B-class tier as the Module 7 scale-up reference.
 - Add the two-day outline: eight modules with rough timing. Each day runs 8 AM to 5 PM with lunch and two breaks. Day 1 is modules 1 through 4 (including 3.5). Day 2 is modules 5 through 8.
-- Add a Prerequisites section attendees can complete before the event. It will be sent to ISC2 verbatim, so write it for a stranger: supported OS versions, 16 GB RAM, about 10 GB free disk, Python 3.11 or newer, Git, a GitHub account, Ollama installed, the default model pre-pulled with `ollama pull <model>`, and the ability to install software. Note that an instructor-hosted model will be available on the workshop network as a fallback for laptops that cannot run the model (that is what the `OLLAMA_HOST` override is for).
+- Add a Prerequisites section attendees can complete before the event. It will be sent to ISC2 verbatim, so write it for a stranger: supported OS versions, 16 GB RAM, about 10 GB free disk, Python 3.11 or newer, Git, a GitHub account, Ollama installed, the default model pre-pulled with `ollama pull <model>`, and the ability to install software. For laptops that cannot run the default model, the fallback is the 3B tier plus pairing, and `OLLAMA_HOST` is documented as a mechanism only. Superseded September 2026: there is no instructor-hosted server, see CLAUDE.md.
 - Update the Structure section to the real tree. Keep the license, the topics, and the status line about the final lab guide publishing after October.
 
 ### 2. reference-pipeline/ (the hello-world reviewer)
@@ -108,7 +108,7 @@ Not promised, but planned:
 - Chain-of-verification pass.
 - `eval-harness/`: detection-rate measurement and capstone scoring (diff-only vs diff plus repo-read). Supersedes `docs/MODEL_EVAL.md`.
 - `defense-patterns/`: Day 2 attacks and mitigations.
-- MCP layer, instructor-hosted fallback docs, workshop network notes.
+- MCP layer.
 - `slides/` and `lab-guide/` prose.
 
 ## Kickoff prompt

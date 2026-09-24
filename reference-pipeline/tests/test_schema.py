@@ -118,3 +118,56 @@ def test_every_schema_key_is_present_on_a_validated_finding():
 def test_severity_and_confidence_vocabularies_match_the_documented_schema():
     assert review.SEVERITIES == ["critical", "high", "medium", "low", "info"]
     assert review.CONFIDENCES == ["high", "medium", "low"]
+
+
+# --------------------------------------------------- test-code context
+
+
+def test_files_under_a_tests_directory_are_recognized():
+    assert review.looks_like_test_code("target-app/tests/conftest.py")
+    assert review.looks_like_test_code("a/b/test/helpers.py")
+
+
+def test_test_prefixed_and_suffixed_filenames_are_recognized():
+    assert review.looks_like_test_code("tests/test_planted_bugs.py")
+    assert review.looks_like_test_code("pkg/widget_test.py")
+    assert review.looks_like_test_code("conftest.py")
+
+
+def test_fixture_and_spec_directories_are_recognized():
+    assert review.looks_like_test_code("app/fixtures/data.py")
+    assert review.looks_like_test_code("app/spec/thing.py")
+
+
+def test_application_code_is_not_mistaken_for_test_code():
+    assert not review.looks_like_test_code("target-app/app.py")
+    assert not review.looks_like_test_code("target-app/auth.py")
+    assert not review.looks_like_test_code("src/latest/protest.py")
+
+
+SCANNER = {
+    "tool": "Bandit",
+    "refs": ["B105"],
+    "line": 15,
+    "file": "target-app/app.py",
+    "message": "Possible hardcoded password.",
+}
+
+
+def test_triage_prompt_carries_the_scanner_facts():
+    user = review.build_triage_user(SCANNER, "1: x = 1")
+    assert "B105" in user
+    assert "line 15" in user
+    assert "target-app/app.py" in user
+    assert "Numbered source:" in user
+
+
+def test_application_code_gets_no_test_context_line():
+    user = review.build_triage_user(SCANNER, "1: x = 1")
+    assert "test or fixture code" not in user
+
+
+def test_test_code_is_flagged_as_context_for_the_model():
+    scanner = dict(SCANNER, file="target-app/tests/conftest.py")
+    user = review.build_triage_user(scanner, "1: x = 1")
+    assert "test or fixture code" in user

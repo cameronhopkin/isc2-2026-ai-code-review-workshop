@@ -317,6 +317,47 @@ def read_staged_diff():
 # ----------------------------------------------------------------- model
 
 
+TEST_PATH_MARKERS = ("test", "tests", "conftest", "fixtures", "spec")
+
+
+def looks_like_test_code(file_path):
+    """True when a path is test or fixture code.
+
+    Credentials in test fixtures are a different thing from credentials in
+    application code. The model is told this rather than having its answer
+    overridden, because a real secret can still be committed to a test file.
+    """
+    parts = [part.lower() for part in Path(file_path).parts]
+    stem = Path(file_path).stem.lower()
+    if any(marker in parts for marker in TEST_PATH_MARKERS):
+        return True
+    return stem.startswith("test_") or stem.endswith("_test") or stem == "conftest"
+
+
+def build_triage_user(scanner, source):
+    """The user message for one scanner finding. Shared so evaluation
+    harnesses measure exactly what production sends."""
+    context = ""
+    if looks_like_test_code(scanner["file"]):
+        context = (
+            "\nContext: this file is test or fixture code, not application code.\n"
+        )
+    return (
+        "Scanner: %s reported %s at line %d of %s\n"
+        "Scanner message: %s\n%s\n"
+        "Numbered source:\n%s"
+        % (
+            scanner["tool"],
+            ", ".join(scanner["refs"]),
+            scanner["line"],
+            scanner["file"],
+            scanner["message"],
+            context,
+            source,
+        )
+    )
+
+
 def numbered_source(path):
     """Read a file with 1-based line numbers prefixed."""
     try:
@@ -454,19 +495,7 @@ def triage_findings(config, prompts, scanner_findings, dry_run):
             continue
         total_lines = source.count("\n") + 1
 
-        user = (
-            "Scanner: %s reported %s at line %d of %s\n"
-            "Scanner message: %s\n\n"
-            "Numbered source:\n%s"
-            % (
-                scanner["tool"],
-                ", ".join(scanner["refs"]),
-                scanner["line"],
-                scanner["file"],
-                scanner["message"],
-                source,
-            )
-        )
+        user = build_triage_user(scanner, source)
 
         if dry_run:
             rendered.append({"system": prompts["triage"], "user": user})

@@ -125,17 +125,33 @@ You should see the model you pulled. If the list is empty, the pull did not fini
 
 ### If your laptop cannot run the model
 
-An instructor-hosted model will be available on the workshop network as a fallback. You point the tooling at it by setting one environment variable, and everything else works the same:
+Two fallbacks, in order.
+
+**1. Use the smaller model.** `qwen2.5-coder:3b` is 1.9 GB instead of 4.7 GB, and on the main workshop path it is just as accurate as the default and about twice as fast. For Day 1 you give up nothing. Pull it and point the tooling at it:
 
 ```bash
-export OLLAMA_HOST=http://<address-given-in-room>:11434
+ollama pull qwen2.5-coder:3b
+export REVIEW_MODEL=qwen2.5-coder:3b
 ```
 
 ```powershell
-$env:OLLAMA_HOST = "http://<address-given-in-room>:11434"
+ollama pull qwen2.5-coder:3b
+$env:REVIEW_MODEL = "qwen2.5-coder:3b"
 ```
 
-This is a safety net, not the plan. Please still try the prerequisites above, because the room network will be shared by everyone using the fallback.
+**2. Pair with a neighbour.** The labs work fine with two people at one machine, and Day 2 involves attacking each other's bots anyway.
+
+The tooling also reads `OLLAMA_HOST`, so it can point at a model served from another machine if you have one available:
+
+```bash
+export OLLAMA_HOST=http://<address>:11434
+```
+
+```powershell
+$env:OLLAMA_HOST = "http://<address>:11434"
+```
+
+That is a mechanism, not a promise. Plan on your own laptop running the model.
 
 ## Structure
 

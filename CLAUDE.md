@@ -25,7 +25,9 @@ Settled May 2026. Revised September 2026 only where measurement contradicted the
 - Grounded retrieval: the bot gets a repo-read tool as a first-class input and fetches the slice of code it asks for. No whole-repo dumps. This is where the model earns its keep, on the BOLA that no scanner catches.
 - Three anti-hallucination patterns are taught and enforced in code, not just in prompts: citation-required (every finding cites file and line), chain-of-verification (the model checks its output against the provided context), refuse-over-guess (no findings is a valid, first-class answer).
 - Capstone: the same vulnerable codebase reviewed by two bot configurations, diff-only vs diff plus repo-read, scored on planted BOLA bugs.
-- No cloud, no API keys, no paid tiers. Docker is never a prerequisite. Note that Docker Desktop was in the prerequisites as submitted, and dropping it makes setup easier rather than breaking a promise. Confirm what ISC2 actually published and tell Bradley if the listing needs the edit.
+- No cloud, no API keys, no paid tiers. **No container runtime is a prerequisite**, and nothing in the workshop needs one.
+- Docker Desktop was in the prerequisites as submitted and has been dropped. It is not being swapped for something else, it is being removed, because attendees need no container runtime at all. Docker Desktop also requires a paid subscription for larger organizations, which is a real problem on the corporate laptops most attendees will bring. Confirm what ISC2 actually published and tell Bradley the listing needs the edit.
+- If a later module genuinely needs a container, for example sandboxing the bot in Module 6 or the scale-up architecture in Module 7, **use Podman, not Docker**. Rootless, no daemon, no licensing question on a work machine. Ask before it becomes a prerequisite rather than a demo.
 
 ## Model tiers (measured September 2026, M1 16 GB)
 
@@ -38,7 +40,9 @@ Measured on a Flask sample with five planted bugs, five reps, temperature 0, JSO
 
 Hardware honesty for the prerequisites, which go to ISC2 verbatim: 16 GB RAM minimum, no 8 GB machines, GPU or Apple Silicon recommended, model pre-pulled before travel. A CPU-only Windows laptop produces a few tokens per second, so state plainly that a review takes a minute or two there.
 
-Open item: the Dell's 3050 Ti has 4 GB of VRAM and will not hold a 7B fully. As the room fallback server it serves 3B well and 7B poorly. Either accept 3B as the fallback tier or find a bigger-VRAM box before October.
+**There is no instructor-hosted fallback server.** The available hardware is one M1 MacBook Pro, which is the presentation machine, and one Dell XPS 15 whose 3050 Ti has 4 GB of VRAM and cannot hold a 7B. Neither can serve a room over conference wifi. The attendee-facing docs must not promise one.
+
+The fallback story is the 3B tier plus pairing. That is a genuinely good answer rather than a climbdown: the 3B is 1.9 GB, matches the 7B exactly on the scanner-triage path that Modules 3 and 4 run on, and does it twice as fast. `OLLAMA_HOST` stays documented as a mechanism for anyone who has another machine, and is described as a mechanism, never as something provided in the room.
 
 ## Standing rules
 
