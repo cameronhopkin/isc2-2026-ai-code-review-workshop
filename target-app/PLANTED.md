@@ -86,7 +86,7 @@ Measurements behind this table are in `docs/MODEL_EVAL.md`.
 
 ## Known scanner false positives
 
-These are not planted bugs. They are real scanner output on code that is fine, and they are useful: a bot that reports all of them uncritically is failing the refuse-over-guess pattern, and triaging them is Module 3.5 material.
+These are not planted bugs. They are real scanner output on code that is fine, and they are useful: a bot that reports all of them uncritically is failing the refuse-over-guess pattern, and triaging them is Module 3 material.
 
 | Scanner | Where | Why it fires | Why it is not a bug |
 |---|---|---|---|

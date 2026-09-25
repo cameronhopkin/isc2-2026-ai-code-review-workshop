@@ -42,8 +42,10 @@ Replace this file with the actual submitted text when it is to hand, and delete 
 
 ## Prerequisites as submitted
 
+**Unverified, and nothing here is published.** This list comes from the source summary, not from any ISC2 page. See reconciliation item 2.
+
 - 16 GB RAM minimum, 32 GB recommended.
-- Docker Desktop.
+- Docker Desktop. (Unconfirmed, and contradicted by Cameron's recollection.)
 - GitHub or GitLab free tier account.
 - Python 3.11 or newer.
 
@@ -58,8 +60,13 @@ The September 2026 decision to default to `qwen2.5-coder:7b` sits inside the 1B 
 Open gaps between this document and the current repo. Each needs a decision.
 
 1. ~~**Python version.**~~ **Resolved September 2026.** The published prerequisite is 3.11 or newer, and the repo now matches it. Attendee docs say 3.11 or newer. CI tests the 3.11 floor on all three operating systems and also tests 3.14. Dev machines run 3.14. No coordination with Bradley needed.
-2. **Docker Desktop.** Published as a prerequisite, since dropped. **Decided September 2026: removed, not replaced.** Nothing in the workshop needs a container runtime, so attendees install nothing in its place. Docker Desktop also carries a paid subscription requirement for larger organizations, which is a live problem on the corporate laptops most attendees bring. If a later module genuinely needs a container, it will use Podman. Still open: confirm what ISC2 actually has on the listing and tell Bradley it needs the edit, because an attendee who installs Docker Desktop on a work machine because our listing told them to is a problem we caused.
-3. **Module 3.5.** The repo adds an Anti-Hallucination Patterns session on Day 1. The submitted plan has eight modules with no 3.5, and covers output validation for hallucinated findings inside Module 6, Enterprise Hardening, on Day 2. Either fold 3.5 into the published numbering or accept it as an unnumbered Day 1 segment. Do not let the published module count drift.
+2. **Docker Desktop, and prerequisites generally.** **Checked September 2026: ISC2 publishes no prerequisites for this workshop at all.** The public listing is one descriptive paragraph. There is no technical requirements section, no Docker, no Python version, no hardware floor. Verified against the ISC2 pre-conference workshops page and the Cvent registration page; the EventScribe agenda returns 403 and was not readable.
+
+   The claim above that Docker Desktop was a submitted prerequisite originates from this document's source summary and could not be confirmed anywhere. Cameron does not recall submitting it. **Treat it as unproven and do not act on it.** Nothing needs to be corrected with ISC2, because nothing was published.
+
+   The consequence matters more than the correction: the Prerequisites section of `README.md` is not reconciling against a published list, it **is** the list. It is the only prerequisites document in existence, so it is what attendees get told. Nothing in the workshop needs a container runtime. If a later module ever does, it will use Podman, which is rootless, has no daemon, and raises no licensing question on a work machine.
+
+3. ~~**Module 3.5.**~~ **Resolved September 2026.** Folded into Module 3 as its second part, "making the bot trustworthy". Eight whole-numbered modules, four per day, matching the submitted plan. Citation-required and refuse-over-guess are enforced in `review.py`, which is what Module 3 builds, so they belong in that session rather than in one of their own.
 4. **Posting to the PR or MR.** The submitted Module 3 lab ends with a comment posted to the PR or MR. Phase 1 ends with JSON on stdout. This is a promised behavior, so it is Phase 2 work rather than an optional extra.
 5. **GitLab CI.** Templates for both CI systems were promised. Phase 1 is GitHub Actions only, so the GitLab template is required Phase 2 work.
 6. **TCO model.** The third published takeaway has no home in the current build plan. It belongs in Module 7.

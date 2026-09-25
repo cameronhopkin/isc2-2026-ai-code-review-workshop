@@ -44,7 +44,7 @@ Both days run 8:00 AM to 5:00 PM with an hour for lunch and two breaks.
 | 11:30 | Lunch |
 | 12:30 | **3. Building the Security Bot.** Lab: read scanner results, triage them through the model, produce a review comment. |
 | 14:15 | Break |
-| 14:30 | **3.5 Anti-Hallucination Patterns.** Citation-required, chain-of-verification, refuse-over-guess, enforced in code. |
+| 14:30 | **3, continued. Making the bot trustworthy.** Citation-required, chain-of-verification, refuse-over-guess, enforced in code rather than asked for in the prompt. |
 | 15:15 | **4. CI/CD Integration.** Lab: the bot runs in a live pipeline against a commit with planted vulnerabilities, non-blocking. |
 | 17:00 | End |
 
