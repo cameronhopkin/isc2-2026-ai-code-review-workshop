@@ -31,14 +31,17 @@ Settled May 2026. Revised September 2026 only where measurement contradicted the
 - That means the Prerequisites section of `README.md` is not reconciling against a published list, it **is** the list. It is the only prerequisites document that exists, so whatever it says is what attendees will be told. Write it accordingly.
 - If a later module genuinely needs a container, for example sandboxing the bot in Module 6 or the scale-up architecture in Module 7, **use Podman, not Docker**. Rootless, no daemon, no licensing question on a work machine. Ask before it becomes a prerequisite rather than a demo.
 
-## Model tiers (measured September 2026, M1 16 GB)
+## Model tiers (measured October 2026)
 
-Measured on a Flask sample with five planted bugs, five reps, temperature 0, JSON-schema-constrained decoding. Numbers live in `docs/MODEL_EVAL.md`.
+Bake-off on the real pipeline against `target-app`, three reps per model, triage and cold review, temperature 0, JSON-schema-constrained decoding. Numbers live in `docs/MODEL_EVAL.md`. Measured on an M5 Max; time the default on a 16 GB machine before quoting laptop speeds.
 
-- **Default is `qwen2.5-coder:7b`.** It is the only model tested that meets the definition of done. Cold discovery with scanner evidence supplied: SQL injection 5/5, hardcoded secret 5/5, command injection 5/5. About 60 seconds per full review on the M1.
-- **`qwen2.5-coder:3b` is the triage tier, and on the triage path it is not a downgrade.** It is 100 percent reliable at explaining and prioritizing a scanner finding (20/20 calls, correct line preserved every time), matching the 7B exactly while running twice as fast, 30 seconds against 65 for the same four-finding review. Because scanner output is the primary input, a 3B attendee gives up nothing in Modules 3 and 4. It cannot discover vulnerabilities cold: 0/5 on both the SQL injection and the hardcoded secret in every configuration tested, including the q8 quant and a decomposed one-call-per-finding architecture. It is not viable for the capstone.
-- **Do not use `qwen3:4b` or any reasoning model.** Thinking tokens make a single review take minutes and fight the schema constraint.
-- The 3B versus 7B split is content, not just configuration. The same finding through both models is the Module 2 "what it catches, misses, and hallucinates" lab and the Module 1 model-size discussion.
+- **Default is `qwen3.5:9b` with `think = false`.** It escalated every scanner-reachable planted bug in triage (SQL injection, both hardcoded secrets, command injection) and found the same four cold. 6.6 GB, fits 16 GB.
+- **`gpt-oss:20b` with `think = "low"` is the Module 2 model**, because the published description names GPT-OSS. It cannot turn reasoning off, so it needs a level. It was the only model that found path traversal cold, with the fewest and most precise findings. 13 GB, needs about 24 GB RAM.
+- **`qwen2.5-coder:7b` is the low-memory fallback.** It rates the hardcoded reporting token in `app.py` as info in every triage run, a real false negative.
+- **`qwen2.5-coder:3b` is no longer a triage tier.** On the current prompt it drops the hardcoded secret key and escalates a known false positive. Do not recommend it.
+- **Reasoning models only with reasoning set explicitly.** `think` in `config.toml` (or `REVIEW_THINK`) is always set. A reasoning model left on its default, like `qwen3:4b` in September, takes minutes per review.
+- Every newer model escalates the `auth.py` false positive that the 7B dismisses. That is prompt work, and the before and after numbers are Module 3 content.
+- Cisco Foundation-Sec 8B (security-trained) found the reachable bugs cold but at 19 to 20 findings per run, and dropped the secret key in triage. Security training is not code reading; useful Module 1 discussion, not a default.
 
 Hardware honesty for the prerequisites, which go to ISC2 verbatim: 16 GB RAM minimum, no 8 GB machines, GPU or Apple Silicon recommended, model pre-pulled before travel. A CPU-only Windows laptop produces a few tokens per second, so state plainly that a review takes a minute or two there.
 
