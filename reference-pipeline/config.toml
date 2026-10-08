@@ -35,8 +35,9 @@ max_findings = 25
 # Scanner rules that are advisory rather than defects, dropped before the
 # model ever sees them. Triaging these wastes a model call each.
 #   B404  importing subprocess, which is not a bug on its own
+#   B403  importing pickle, same reason; B301 flags the unsafe call itself
 #   B101  assert used, which is how pytest is written
-ignored_rules = ["B404", "B101"]
+ignored_rules = ["B404", "B403", "B101"]
 
 # Paths never handed to the scanners.
 excluded_paths = [".venv", ".git", ".pytest_cache", "__pycache__", "node_modules"]
