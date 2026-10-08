@@ -77,6 +77,30 @@ def fail(message) -> NoReturn:
 
 # ---------------------------------------------------------------- config
 
+THINK_LEVELS = ("low", "medium", "high")
+
+
+def parse_think(value):
+    """Normalize the think setting from config.toml or REVIEW_THINK.
+
+    false turns reasoning off and is safe on every model, including models
+    that have no reasoning mode. A level (low, medium, high) is for models
+    that cannot turn reasoning off, such as gpt-oss. None sends nothing.
+    """
+    if value is None or isinstance(value, bool):
+        return value
+    text = str(value).strip().lower()
+    if text in ("false", "off", "no", "0"):
+        return False
+    if text in ("true", "on", "yes", "1"):
+        return True
+    if text in THINK_LEVELS:
+        return text
+    fail(
+        "think must be false, true, low, medium, or high, not '%s'. "
+        "Fix model.think in config.toml or REVIEW_THINK." % value
+    )
+
 
 def load_config(path=CONFIG_PATH):
     """Read config.toml and apply environment overrides."""
@@ -95,6 +119,8 @@ def load_config(path=CONFIG_PATH):
         fail("no model configured. Set model.name in config.toml or REVIEW_MODEL.")
     if not model["host"]:
         fail("no host configured. Set model.host in config.toml or OLLAMA_HOST.")
+
+    model["think"] = parse_think(os.environ.get("REVIEW_THINK", model.get("think")))
 
     review.setdefault("max_findings", 25)
     review.setdefault("ignored_rules", [])
@@ -385,6 +411,8 @@ def call_model(config, system, user, schema):
             {"role": "user", "content": user},
         ],
     }
+    if model.get("think") is not None:
+        payload["think"] = model["think"]
     try:
         response = requests.post(url, json=payload, timeout=model.get("timeout_seconds", 300))
     except requests.exceptions.ConnectionError:
@@ -395,7 +423,7 @@ def call_model(config, system, user, schema):
     except requests.exceptions.Timeout:
         fail(
             "Ollama did not answer within %s seconds. Raise model.timeout_seconds "
-            "in config.toml, or switch model.name to qwen2.5-coder:3b."
+            "in config.toml, or check that model.think is false (or low for gpt-oss)."
             % model.get("timeout_seconds", 300)
         )
 
@@ -403,6 +431,12 @@ def call_model(config, system, user, schema):
         fail(
             "model '%s' is not present. Pull it with 'ollama pull %s'."
             % (model["name"], model["name"])
+        )
+    if response.status_code == 400 and "does not support thinking" in response.text:
+        fail(
+            "model '%s' has no reasoning mode, so think cannot be a level. "
+            "Set model.think = false in config.toml, or unset REVIEW_THINK."
+            % model["name"]
         )
     if response.status_code != 200:
         fail("Ollama returned HTTP %s: %s" % (response.status_code, response.text[:300]))

@@ -3,15 +3,26 @@
 # Environment variables win over anything set here:
 #   OLLAMA_HOST   overrides host
 #   REVIEW_MODEL  overrides model
+#   REVIEW_THINK  overrides think
 
 [model]
-# Default is the 7B. It is the only model measured that finds bugs cold,
-# which the capstone needs. See docs/MODEL_EVAL.md.
+# Default is qwen3.5:9b with reasoning off. In the October 2026 bake-off it
+# escalated every scanner-reachable planted bug in both triage and cold
+# review, and it fits a 16 GB laptop (6.6 GB). See docs/MODEL_EVAL.md.
 #
-# On a CPU-only or memory-constrained laptop, switch to
-# "qwen2.5-coder:3b". It triages scanner findings just as accurately and
-# about twice as fast. It cannot discover bugs cold.
-name = "qwen2.5-coder:7b"
+# think controls reasoning. Keep it set explicitly, because a reasoning
+# model left on its default spends minutes thinking before it answers.
+#   false              reasoning off. Safe on every model.
+#   "low" to "high"    only for models that cannot turn reasoning off.
+#
+# Other models, switch both lines together:
+#   gpt-oss:20b        think = "low"   The Module 2 model. Needs 24 GB+ RAM.
+#   qwen2.5-coder:7b   think = false   Previous default, 4.7 GB. Misses a
+#                                      hardcoded token in triage.
+#
+# REVIEW_MODEL and REVIEW_THINK override these two lines.
+name = "qwen3.5:9b"
+think = false
 host = "http://127.0.0.1:11434"
 timeout_seconds = 300
 temperature = 0
