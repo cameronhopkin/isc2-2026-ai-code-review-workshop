@@ -12,7 +12,8 @@ Audience level as published: Mid, 4 to 9 years. Track: Engineering/Architecture.
 
 - Security engineers who are comfortable in a terminal and have never run a local model.
 - Attendee laptops: mostly Windows 11 corporate machines, then macOS on Apple Silicon, some Linux. Baseline assumption: 16 GB RAM, no admin rights.
-- Test machines on hand: MacBook Pro M1 16 GB (macOS), Dell XPS 15 32 GB (Windows 11), Kubuntu desktop (Linux).
+- Presentation and demo machine: MacBook Pro M5 Max 48 GB (macOS), upgraded October 2026 for the talk and the workshop. It runs `gpt-oss:20b` live for Module 2.
+- Other test machines: Dell XPS 15 32 GB (Windows 11), Kubuntu desktop (Linux). The M5 Max is far faster than an attendee laptop, so time anything quoted to attendees on a 16 GB machine.
 
 ## Design decisions
 
@@ -45,9 +46,9 @@ Bake-off on the real pipeline against `target-app`, three reps per model, triage
 
 Hardware honesty for the prerequisites, which go to ISC2 verbatim: 16 GB RAM minimum, no 8 GB machines, GPU or Apple Silicon recommended, model pre-pulled before travel. A CPU-only Windows laptop produces a few tokens per second, so state plainly that a review takes a minute or two there.
 
-**There is no instructor-hosted fallback server.** The available hardware is one M1 MacBook Pro, which is the presentation machine, and one Dell XPS 15 whose 3050 Ti has 4 GB of VRAM and cannot hold a 7B. Neither can serve a room over conference wifi. The attendee-facing docs must not promise one.
+**There is no instructor-hosted fallback server.** The M5 Max is the presentation machine and is busy presenting, and no laptop can serve a room over conference wifi. The attendee-facing docs must not promise one.
 
-The fallback story is the 3B tier plus pairing. That is a genuinely good answer rather than a climbdown: the 3B is 1.9 GB, matches the 7B exactly on the scanner-triage path that Modules 3 and 4 run on, and does it twice as fast. `OLLAMA_HOST` stays documented as a mechanism for anyone who has another machine, and is described as a mechanism, never as something provided in the room.
+The fallback story is `qwen2.5-coder:7b` (4.7 GB, no reasoning mode) plus pairing. The 3B tier is retired: on the current prompt it drops a real secret in triage. `OLLAMA_HOST` stays documented as a mechanism for anyone who has another machine, and is described as a mechanism, never as something provided in the room.
 
 ## Standing rules
 
