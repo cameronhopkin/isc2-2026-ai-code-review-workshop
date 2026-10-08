@@ -96,7 +96,7 @@ Bandit catches it as **B105**. detect-secrets catches it as a Secret Keyword.
 | 5. Path traversal | no | no | no |
 | 6. Hardcoded universal password | B105 | yes | depends on the model, see bug 6 |
 
-Four of six are reachable in Phase 1. `smoke.py` asserts on bugs 2, 3, and 4; bug 6 joins it once the default model stops dismissing it. Bugs 1 and 5 being out of reach is the point rather than a gap: bug 5 motivates the grounding work in Module 3, and bug 1 is what the capstone scores.
+Four of six are reachable in Phase 1. `smoke.py` asserts on bugs 2, 3, and 4, the floor every supported model meets, so an attendee on the fallback model does not see a failed setup. Bug 6 is measured in `docs/MODEL_EVAL.md` instead: the default catches it, the fallback does not. Bugs 1 and 5 being out of reach is the point rather than a gap: bug 5 motivates the grounding work in Module 3, and bug 1 is what the capstone scores.
 
 Measurements behind this table are in `docs/MODEL_EVAL.md`.
 
