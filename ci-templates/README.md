@@ -2,7 +2,9 @@
 
 Module 4. The bot reviews only the lines a pull request or merge request changes and posts one comment. It edits that comment on later pushes instead of adding new ones. It never blocks the merge.
 
-The model runs inside the free CI runner. No API keys and no cloud model. The first run downloads the model (about 6.6 GB) and takes a while. Later runs restore it from the CI cache.
+The model runs inside the free CI runner. No API keys and no cloud model. The first run downloads the model (about 6.6 GB). Later runs restore it from the CI cache.
+
+**Expect about 8 minutes per pull request.** Measured on a free GitHub runner in October 2026 on the lab change below: about 1 minute to install Ollama, about 6 minutes for the review itself (the runner has no GPU, so the model runs on CPU), and seconds to post. Because the check never blocks the merge, nobody waits on it.
 
 Pick GitHub or GitLab. You do not need both.
 
