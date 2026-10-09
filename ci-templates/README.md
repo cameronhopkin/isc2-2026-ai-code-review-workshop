@@ -52,10 +52,12 @@ Nothing else to set up. The workflow uses the built-in `GITHUB_TOKEN`.
 
 ## GitLab CI/CD
 
-1. Create the token the bot comments with. GitLab's built-in job token cannot comment on merge requests.
-   - **Settings > Access tokens > Add new token.** Name it `review-bot`, role **Reporter**, scope **api**, and an expiry date after the workshop.
-   - Copy the token.
-   - **Settings > CI/CD > Variables > Add variable.** Key `REVIEW_BOT_TOKEN`, paste the token, tick **Mask variable**.
+1. Create the token the bot comments with. GitLab's built-in job token cannot comment on merge requests, and on the free tier of GitLab.com you cannot create a project access token, so the bot uses a personal access token.
+   - **Your avatar > Edit profile > Access tokens > Add new token.** Name it `review-bot`, scope **api**, and set the expiry to the day after the workshop.
+   - Copy the token. GitLab shows it only once.
+   - In your project: **Settings > CI/CD > Variables > Add variable.** Key `REVIEW_BOT_TOKEN`, paste the token, set visibility to **Masked**.
+
+   A personal access token with scope api can act as you on every project you can reach, which is far more than the bot needs. That is the honest cost of the free tier, and it is one of the Module 6 hardening discussions. Use a short expiry, and consider a separate GitLab account just for the workshop. On Premium or Ultimate, use a project access token instead (**Settings > Access tokens**, role **Reporter**, scope **api**), which is limited to the one project.
 2. Copy the pipeline into place on `main` and push it:
 
    ```bash
@@ -104,6 +106,6 @@ Do not read the patch before the bot has reviewed it. Compare the bot's comment 
 ## If something goes wrong
 
 - **No comment appears, GitHub.** Open the job log. If it says the token lacks permission, check that the workflow file still has `pull-requests: write` under `permissions`.
-- **No comment appears, GitLab.** The job log names the problem. Most often `REVIEW_BOT_TOKEN` is missing, not masked correctly, or the token's role is below Reporter.
+- **No comment appears, GitLab.** The job log names the problem. Most often `REVIEW_BOT_TOKEN` is missing, has expired, or lacks the api scope.
 - **The job runs out of time or memory.** Use the smaller model: set `REVIEW_MODEL` to `qwen2.5-coder:7b` and `REVIEW_THINK` to `false` (GitHub: repository variables; GitLab: CI/CD variables).
 - **The comment says no findings.** The diff contained no Python files, or the scanners found nothing on the changed lines. The comment says which.
