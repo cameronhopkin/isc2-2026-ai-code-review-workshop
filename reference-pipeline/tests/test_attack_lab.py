@@ -26,7 +26,9 @@ def test_attack_applies_and_targets_are_found(name):
         for edit in spec["edits"]:
             run_attack.apply_edit(root, edit)
         for label, file, anchor, _span in spec["targets"]:
-            assert run_attack.anchor_line(root, file, anchor), "%s: cannot find %s in %s" % (name, label, file)
+            assert run_attack.anchor_line(
+                root, file, anchor
+            ), "%s: cannot find %s in %s" % (name, label, file)
     finally:
         shutil.rmtree(root, ignore_errors=True)
 
@@ -40,6 +42,8 @@ def test_attack_changes_something(name):
         before = {f: (root / f).read_text(encoding="utf-8") for f in files}
         for edit in spec["edits"]:
             run_attack.apply_edit(root, edit)
-        assert any((root / f).read_text(encoding="utf-8") != before[f] for f in files)
+        assert any(
+            (root / f).read_text(encoding="utf-8") != before[f] for f in files
+        )
     finally:
         shutil.rmtree(root, ignore_errors=True)
