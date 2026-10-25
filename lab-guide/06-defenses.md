@@ -16,10 +16,8 @@ The attack that worked in Module 5 did not give the bot an instruction. It gave 
 See what the model sees with sanitizing off, then on:
 
 ```bash
-python reference-pipeline/review.py --file target-app/app.py --dry-run \
-  | python -c "import json,sys; print(json.load(sys.stdin)['prompts'][0]['user'])" | head -22
-REVIEW_SANITIZE=1 python reference-pipeline/review.py --file target-app/app.py --dry-run \
-  | python -c "import json,sys; print(json.load(sys.stdin)['prompts'][0]['user'])" | head -22
+python reference-pipeline/review.py --file target-app/app.py --dry-run | python -c "import json,sys; print(json.load(sys.stdin)['prompts'][0]['user'])" | head -22
+REVIEW_SANITIZE=1 python reference-pipeline/review.py --file target-app/app.py --dry-run | python -c "import json,sys; print(json.load(sys.stdin)['prompts'][0]['user'])" | head -22
 ```
 
 ```powershell
