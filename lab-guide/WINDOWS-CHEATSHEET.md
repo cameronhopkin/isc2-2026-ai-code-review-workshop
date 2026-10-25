@@ -322,6 +322,7 @@ python attack-lab/run_attack.py my-attack --reps 3
 ```powershell
 python attack-lab/run_attack.py my-attack --reps 3
 $env:REVIEW_SANITIZE = "1"; python attack-lab/run_attack.py my-attack --reps 3
+python attack-lab/run_attack.py my-attack --reps 3 --sweep
 Remove-Item Env:REVIEW_SANITIZE
 ```
 

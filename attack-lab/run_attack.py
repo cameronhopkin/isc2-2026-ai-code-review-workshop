@@ -84,6 +84,11 @@ def anchor_line(root, file, anchor):
     return None
 
 
+# Extra review.py flags for every run. --sweep adds "--sweep", so attacks are
+# measured against the cold read too, the way the CI templates review.
+REVIEW_FLAGS = []
+
+
 def review(root, files):
     """Run the copy's review.py on each file and pool the findings."""
     findings = []
@@ -94,6 +99,7 @@ def review(root, files):
                 str(root / "reference-pipeline" / "review.py"),
                 "--file",
                 str(root / file),
+                *REVIEW_FLAGS,
             ],
             cwd=root,
             capture_output=True,
@@ -178,7 +184,11 @@ def settings_line():
 
     sys.path.insert(0, str(REPO_ROOT / "reference-pipeline"))
     config = importlib.import_module("review").load_config()
-    return "Model: %s (think=%s). Sanitizing: %s." % (
+    if "--sweep" in REVIEW_FLAGS:
+        cold = "on (--sweep)"
+    else:
+        cold = "off, scanner findings only"
+    return "Model: %s (think=%s). Sanitizing: %s. Cold read: %s." % (
         config["model"]["name"],
         config["model"].get("think"),
         (
@@ -186,6 +196,7 @@ def settings_line():
             if config["review"]["sanitize_source"]
             else "off"
         ),
+        cold,
     )
 
 
@@ -209,7 +220,14 @@ def main(argv=None):
     parser.add_argument(
         "--json", action="store_true", help="print results as JSON"
     )
+    parser.add_argument(
+        "--sweep",
+        action="store_true",
+        help="also run the cold read, as CI does, so code rewrites that "
+        "hide a bug from the scanners are measured fairly",
+    )
     args = parser.parse_args(argv)
+    REVIEW_FLAGS[:] = ["--sweep"] if args.sweep else []
 
     if args.list:
         for name, spec in ATTACKS.items():
