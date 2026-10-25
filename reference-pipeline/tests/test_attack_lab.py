@@ -47,3 +47,19 @@ def test_attack_changes_something(name):
         )
     finally:
         shutil.rmtree(root, ignore_errors=True)
+
+
+def test_sweep_flag_reaches_every_review(monkeypatch, tmp_path):
+    """--sweep measures attacks against the cold read too, as CI reviews."""
+    import subprocess
+
+    calls = []
+
+    def fake_run(command, **kwargs):
+        calls.append(command)
+        return subprocess.CompletedProcess(command, 0, '{"findings": []}', "")
+
+    monkeypatch.setattr(run_attack.subprocess, "run", fake_run)
+    monkeypatch.setattr(run_attack, "REVIEW_FLAGS", ["--sweep"])
+    run_attack.review(tmp_path, ["target-app/app.py"])
+    assert calls and calls[0][-1] == "--sweep"
