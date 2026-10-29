@@ -154,7 +154,7 @@ That is a mechanism, not a promise. Plan on your own laptop running the model.
 - `lab-guide/` Step-by-step instructions for every module
 - `.devcontainer/` GitHub Codespaces setup, for Windows and anyone without a capable laptop
 - `docs/` Build brief, model evaluation, and the proposal of record
-- `slides/` Workshop slides (published after delivery)
+- `slides/` Workshop slides as delivered Oct 24 and 25, 2026, with the changes made in the room: Day 1 (Modules 1 to 4), Day 2 (Modules 5 to 8), and the Capstone walkthrough
 
 ## Topics
 
