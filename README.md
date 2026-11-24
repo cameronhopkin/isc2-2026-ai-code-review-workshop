@@ -4,7 +4,7 @@ Building and Hardening an AI-Powered Code Review Pipeline.
 
 Workshop materials for the ISC2 Security Congress 2026 two-day hands-on workshop. You build a code review bot that runs entirely on your own laptop, wire it into CI, attack it, and harden it.
 
-**Status:** Workshop preparation in progress. Final lab guide published after October 2026.
+**Status:** Delivered at ISC2 Security Congress, October 24 to 25, 2026. All eight modules and the lab guide are complete.
 
 ## What this is
 
